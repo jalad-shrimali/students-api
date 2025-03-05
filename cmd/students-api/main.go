@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jalad-shrimali/students-api/internal/config"
+	"github.com/jalad-shrimali/students-api/internal/http/handlers/student"
 )
 
 func main(){
@@ -22,9 +23,7 @@ func main(){
 
 	//setup router
 	router := http.NewServeMux()
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request){
-		w.Write([]byte("Welcome to students api!"))
-	})
+	router.HandleFunc("POST /api/students", student.New() ) //create a new student
 
 	//start server
 	// before starting the server, we will create a channel to listen for the interrupt signal
