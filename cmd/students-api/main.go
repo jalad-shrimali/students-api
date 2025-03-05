@@ -13,6 +13,7 @@ import (
 
 	"github.com/jalad-shrimali/students-api/internal/config"
 	"github.com/jalad-shrimali/students-api/internal/http/handlers/student"
+	"github.com/jalad-shrimali/students-api/internal/storage/sqlite"
 )
 
 func main(){
@@ -20,10 +21,14 @@ func main(){
 	cfg := config.MustLoad()
 
 	//database setup
-
+	storage, err := sqlite.New(cfg) //create a new sqlite database
+	if err!=nil {
+		log.Fatal(err)
+	}
+	slog.Info("database initialized", slog.String("env", cfg.Env))
 	//setup router
 	router := http.NewServeMux()
-	router.HandleFunc("POST /api/students", student.New() ) //create a new student
+	router.HandleFunc("POST /api/students", student.New(storage) ) //create a new student
 
 	//start server
 	// before starting the server, we will create a channel to listen for the interrupt signal
@@ -47,7 +52,7 @@ func main(){
 	slog.Info("server stopped")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	err := server.Shutdown(ctx)
+	err = server.Shutdown(ctx)
 	if err != nil{
 		log.Fatal("failed to stop server ", slog.String("error", err.Error())) 
 	}

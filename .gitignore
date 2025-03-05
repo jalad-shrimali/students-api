@@ -21,13 +21,10 @@
 go.work
 go.work.sum
 
-#storage file
-storage
+#storage file from root is ignored
+/storage 
 # env file
 .env
 
-# Ignore config folder
-/config/
-
-# Except the config folder inside internal
-!internal/config/
+# Ignore config folder from root
+/config
