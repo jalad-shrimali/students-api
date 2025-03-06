@@ -2,6 +2,10 @@ package sqlite
 
 import (
 	"database/sql"
+	"fmt"
+
+	// "github.com/jalad-shrimali/students-api/internal/http/handlers/student"
+	"github.com/jalad-shrimali/students-api/internal/types"
 
 	"github.com/jalad-shrimali/students-api/internal/config"
 	// import the sqlite3 driver
@@ -47,4 +51,21 @@ func(s *Sqlite) CreateStudent(name string, age int, email string) (int64, error)
 		return 0, err
 	}
 	return lastId, nil //return lastId and nil
+}
+
+func (s *Sqlite) GetStudentById(id int64) (types.Student, error){
+	stmt, err := s.Db.Prepare("SELECT * FROM students WHERE id = ? LIMIT 1")
+	if err != nil{
+		return types.Student{}, err
+	}
+	defer stmt.Close()
+	var student types.Student
+	err = stmt.QueryRow(id).Scan(&student.Id, &student.Name, &student.Age, &student.Email)
+	if err != nil{
+		if err == sql.ErrNoRows{
+			return types.Student{}, fmt.Errorf("no student found with id %d", id)
+		}
+		return types.Student{}, err
+	}
+	return student, nil
 }

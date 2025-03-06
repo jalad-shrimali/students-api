@@ -21,7 +21,7 @@ func main(){
 	cfg := config.MustLoad()
 
 	//database setup
-	storage, err := sqlite.New(cfg) //create a new sqlite database
+	storage, err := sqlite.New(cfg) //create a new sqlite database // you can also switch databases from here
 	if err!=nil {
 		log.Fatal(err)
 	}
@@ -29,6 +29,7 @@ func main(){
 	//setup router
 	router := http.NewServeMux()
 	router.HandleFunc("POST /api/students", student.New(storage) ) //create a new student
+	router.HandleFunc("GET /api/students/{id}", student.GetById(storage) ) //get all students
 
 	//start server
 	// before starting the server, we will create a channel to listen for the interrupt signal
