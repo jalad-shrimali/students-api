@@ -13,7 +13,8 @@ import (
 
 	"github.com/jalad-shrimali/students-api/internal/config"
 	"github.com/jalad-shrimali/students-api/internal/http/handlers/student"
-	"github.com/jalad-shrimali/students-api/internal/storage/sqlite"
+	"github.com/jalad-shrimali/students-api/internal/storage/mongo"
+	// "github.com/jalad-shrimali/students-api/internal/storage/sqlite"
 )
 
 func main(){
@@ -21,8 +22,8 @@ func main(){
 	cfg := config.MustLoad()
 
 	//database setup
-	storage, err := sqlite.New(cfg) //create a new sqlite database // you can also switch databases from here
-	if err!=nil {
+	storage, err := mongo.New(cfg.MongoURI, cfg.MongoDatabase, cfg.MongoCollection) //create a new sqlite database
+	if err != nil {
 		log.Fatal(err)
 	}
 	slog.Info("database initialized", slog.String("env", cfg.Env))
