@@ -93,3 +93,34 @@ func (s *Sqlite) GetAllStudents() ([]types.Student, error){
 	}
 	return students, nil
 }
+
+func (s *Sqlite) UpdateStudent(id int64, name string, age int, email string) (types.Student, error){
+	stmt, err := s.Db.Prepare("UPDATE students SET name = ?, age = ?, email = ? WHERE id = ?")
+	if err != nil{
+		return types.Student{}, err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(name, age, email, id)
+	if err != nil{
+		return types.Student{}, err
+	}
+	return types.Student{
+		Id: id,
+		Name: name,
+		Age: age,
+		Email: email,
+	}, nil
+}
+
+func (s *Sqlite) DeleteStudent(id int64) error{
+	stmt, err := s.Db.Prepare("DELETE FROM students WHERE id = ?")
+	if err != nil{
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(id)
+	if err != nil{
+		return err
+	}
+	return nil
+}
