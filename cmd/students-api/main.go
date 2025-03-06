@@ -29,7 +29,9 @@ func main(){
 	//setup router
 	router := http.NewServeMux()
 	router.HandleFunc("POST /api/students", student.New(storage) ) //create a new student
-	router.HandleFunc("GET /api/students/{id}", student.GetById(storage) ) //get all students
+	router.HandleFunc("GET /api/students/{id}", student.GetById(storage) ) //get student by id
+	router.HandleFunc("GET /api/students", student.GetAllStudent(storage))
+	
 
 	//start server
 	// before starting the server, we will create a channel to listen for the interrupt signal

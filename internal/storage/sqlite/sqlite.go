@@ -36,7 +36,8 @@ func New(cfg *config.Config)(*Sqlite, error){
 
 // now to attach the interface to the storage type we just need to use the method that we have used in interface in our struct
 
-func(s *Sqlite) CreateStudent(name string, age int, email string) (int64, error){ //this is how our struct is implementing the interface
+func(s *Sqlite) CreateStudent(name string, age int, email string) (int64, error){ 
+	//this is how our struct is implementing the interface
 	stmt, err := s.Db.Prepare("INSERT INTO students(name, age, email) VALUES(?,?,?)")
 	if err != nil{
 		return 0, err
@@ -68,4 +69,27 @@ func (s *Sqlite) GetStudentById(id int64) (types.Student, error){
 		return types.Student{}, err
 	}
 	return student, nil
+}
+
+func (s *Sqlite) GetAllStudents() ([]types.Student, error){
+	stmt, err := s.Db.Prepare("SELECT * FROM students")
+	if err != nil{
+		return nil, err
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query()
+	if err != nil{
+		return nil, err
+	}
+	defer rows.Close()
+	var students []types.Student
+	for rows.Next(){
+		var student types.Student
+		err = rows.Scan(&student.Id, &student.Name, &student.Age, &student.Email)
+		if err != nil{
+			return nil, err
+		}
+		students = append(students, student)
+	}
+	return students, nil
 }
